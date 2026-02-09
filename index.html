@@ -2,112 +2,96 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Leap & Learn: Ultimate Professional Editor</title>
+    <title>Leap & Learn: Ultimate Pro Editor</title>
     <style>
         :root { --accent: #7cf9ff; --bg: #050b1a; --panel: #142342; --text: #eaf6ff; }
         body { margin: 0; font-family: 'Segoe UI', sans-serif; display: flex; height: 100vh; background: var(--bg); color: var(--text); overflow: hidden; }
         
-        /* EDITOR SIDEBAR */
-        #editor { width: 480px; min-width: 480px; background: #0a1730; border-right: 1px solid #333; display: flex; flex-direction: column; box-shadow: 5px 0 20px rgba(0,0,0,0.5); }
-        .header { padding: 15px; background: var(--panel); border-bottom: 1px solid #444; display: flex; justify-content: space-between; align-items: center; }
-        .header h2 { margin: 0; font-size: 18px; color: var(--accent); }
+        /* SIDEBAR */
+        #editor { width: 500px; min-width: 500px; background: #0a1730; border-right: 1px solid #333; display: flex; flex-direction: column; }
+        .header { padding: 15px; background: var(--panel); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222; }
+        .tabs { display: flex; background: #000; flex-wrap: wrap; }
+        .tab { flex: 1; padding: 12px; font-size: 10px; font-weight: bold; cursor: pointer; text-align: center; opacity: 0.5; border-bottom: 2px solid transparent; }
+        .tab.active { opacity: 1; border-bottom-color: var(--accent); background: rgba(124, 249, 255, 0.05); }
         
-        .tabs { display: flex; background: #000; overflow-x: auto; }
-        .tab { padding: 12px 15px; font-size: 11px; font-weight: bold; cursor: pointer; opacity: 0.5; border-bottom: 2px solid transparent; white-space: nowrap; }
-        .tab.active { opacity: 1; border-bottom-color: var(--accent); background: rgba(124, 249, 255, 0.1); }
-        
-        .content { flex-grow: 1; overflow-y: auto; padding: 20px; scrollbar-width: thin; }
-        .section { background: var(--panel); border-radius: 10px; padding: 15px; margin-bottom: 20px; border: 1px solid #2a3b5a; }
-        .section h4 { margin: 0 0 12px 0; font-size: 12px; text-transform: uppercase; color: var(--accent); letter-spacing: 1px; }
-        
-        label { display: block; font-size: 11px; margin-bottom: 5px; opacity: 0.8; }
-        input, select, textarea { width: 100%; padding: 8px; margin-bottom: 12px; border-radius: 5px; border: 1px solid #334155; background: #0a1730; color: white; box-sizing: border-box; }
+        .content { flex-grow: 1; overflow-y: auto; padding: 20px; }
+        .group { background: var(--panel); border-radius: 10px; padding: 15px; margin-bottom: 15px; border: 1px solid #2a3b5a; }
+        h4 { margin: 0 0 12px 0; font-size: 11px; text-transform: uppercase; color: var(--accent); }
+
+        label { display: block; font-size: 11px; margin-bottom: 4px; opacity: 0.8; }
+        input, select, textarea { width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #334155; background: #0a1730; color: white; box-sizing: border-box; }
         .row { display: flex; gap: 10px; align-items: center; }
-        input[type="color"] { width: 40px; height: 40px; padding: 2px; cursor: pointer; }
+        input[type="color"] { width: 40px; height: 40px; cursor: pointer; padding: 0; border: none; background: none; }
         
-        .btn { padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.3s; text-align: center; }
-        .btn-main { background: var(--accent); color: #000; width: 100%; }
-        .btn-copy { background: #fff; color: #000; font-size: 12px; }
+        .btn { padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .btn-main { background: var(--accent); color: #000; width: 100%; margin-top: 10px; }
 
         /* PREVIEW */
-        #preview-container { flex-grow: 1; position: relative; background: #000; }
-        #preview-frame { width: 100%; height: 100%; border: none; }
+        #preview-zone { flex-grow: 1; position: relative; background: #000; }
+        iframe { width: 100%; height: 100%; border: none; }
 
         /* MODAL */
-        #modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; padding: 50px; }
-        .modal-body { background: var(--panel); max-width: 1000px; margin: auto; height: 80vh; border-radius: 15px; display: flex; flex-direction: column; padding: 25px; border: 2px solid var(--accent); }
-        .qa-grid { display: flex; gap: 20px; flex-grow: 1; }
-        .qa-col { flex: 1; display: flex; flex-direction: column; }
-        .qa-col textarea { flex-grow: 1; font-family: monospace; resize: none; }
+        #modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 999; padding: 40px; }
+        .modal-box { background: var(--panel); width: 100%; max-width: 1000px; margin: auto; height: 80vh; border-radius: 15px; border: 2px solid var(--accent); display: flex; flex-direction: column; padding: 20px; }
+        .qa-container { display: flex; gap: 20px; flex: 1; min-height: 0; }
+        .qa-box { flex: 1; display: flex; flex-direction: column; }
+        .qa-box textarea { flex: 1; font-family: monospace; resize: none; font-size: 13px; }
     </style>
 </head>
 <body>
 
 <div id="editor">
     <div class="header">
-        <h2>Leap & Learn 🐸</h2>
-        <button class="btn btn-copy" onclick="copyCode()">📋 КОД ДЛЯ GITHUB</button>
+        <h2 style="margin:0; font-size:16px;">LEAP & LEARN BUILDER</h2>
+        <button class="btn" style="background:#fff;" onclick="exportFinal()">📋 КОПИРОВАТЬ КОД</button>
     </div>
 
     <div class="tabs">
-        <div class="tab active" onclick="switchTab('viz', this)">ВИЗУАЛ</div>
-        <div class="tab" onclick="switchTab('hero', this)">ГЕРОЙ</div>
-        <div class="tab" onclick="switchTab('game', this)">ГЕЙМПЛЕЙ</div>
-        <div class="tab" onclick="switchTab('snd', this)">ЗВУКИ</div>
-        <div class="tab" onclick="switchTab('lvl', this)">УРОВНИ</div>
+        <div class="tab active" onclick="showT('viz')">ВИЗУАЛ</div>
+        <div class="tab" onclick="showT('hero')">ГЕРОЙ/ФОН</div>
+        <div class="tab" onclick="showT('game')">ГЕЙМПЛЕЙ</div>
+        <div class="tab" onclick="showT('snd')">ЗВУКИ</div>
+        <div class="tab" onclick="showT('lvl')">ЗАДАНИЯ</div>
     </div>
 
     <div class="content">
-        <div id="tab-viz" class="tab-pane">
-            <div class="section">
-                <h4>🎨 Цвета Экранов</h4>
-                <div class="row">
-                    <input type="color" id="c-bg" value="#0a1730" oninput="upd()">
-                    <label>Фон меню и финала</label>
-                </div>
-                <div class="row" style="margin-top:10px">
-                    <input type="color" id="c-ui" value="#7cf9ff" oninput="upd()">
-                    <label>Цвет панелей и рамок</label>
-                </div>
-                <div class="row" style="margin-top:10px">
-                    <label><input type="checkbox" id="c-neon" checked onchange="upd()"> Неоновое свечение</label>
-                </div>
+        <div id="t-viz" class="pane">
+            <div class="group">
+                <h4>🎨 Цвета Интерфейса</h4>
+                <div class="row"><input type="color" id="c-bg" value="#0a1730" oninput="upd()"><label>Фон экранов</label></div>
+                <div class="row" style="margin-top:10px"><input type="color" id="c-ui" value="#7cf9ff" oninput="upd()"><label>Цвет неона (Рамки/Кнопки)</label></div>
+                <div class="row" style="margin-top:10px"><label><input type="checkbox" id="c-neon" checked onchange="upd()"> Глобальный неон</label></div>
             </div>
-            <div class="section">
+            <div class="group">
                 <h4>🔠 Шрифт</h4>
-                <div class="row">
-                    <input type="color" id="c-font" value="#ffffff" oninput="upd()">
-                    <label>Цвет текста</label>
-                </div>
-                <label>Размер шрифта (px)</label>
+                <div class="row"><input type="color" id="c-font" value="#ffffff" oninput="upd()"><label>Цвет текста</label></div>
+                <label>Размер вопроса (px)</label>
                 <input type="number" id="f-size" value="28" oninput="upd()">
             </div>
         </div>
 
-        <div id="tab-hero" class="tab-pane" style="display:none">
-            <div class="section">
+        <div id="t-hero" class="pane" style="display:none">
+            <div class="group">
                 <h4>👤 Персонаж</h4>
-                <select id="hero-sel" onchange="toggleHero(this.value)">
+                <select id="h-sel" onchange="hChg(this.value)">
                     <option value="https://img.genially.com/67961b32a116fb001568a75e/3074df22-5c73-4ad2-b0b2-491c6fc247f3.png">Лягушка</option>
                     <option value="https://img.genially.com/67961b32a116fb001568a75e/74b56fcf-5354-43dd-9c9a-f50facc9a9bf.png">Хамелеон</option>
                     <option value="https://img.genially.com/67961b32a116fb001568a75e/0feda2a1-485a-4654-8640-bf1adcc9f9ec.png">Ящерица</option>
                     <option value="custom">Свой (Загрузить...)</option>
                 </select>
-                <div id="hero-custom" style="display:none">
-                    <input type="file" accept="image/*" onchange="loadImg(this, 'hero-url')">
-                    <input type="text" id="hero-url" placeholder="URL картинки..." oninput="upd()">
-                </div>
+                <div id="h-custom" style="display:none"><input type="file" accept="image/*" onchange="readI(this,'h-url')"><input type="text" id="h-url" placeholder="URL..." oninput="upd()"></div>
             </div>
-            <div class="section">
-                <h4>🗺️ Фон и Платформы</h4>
-                <label>Локация</label>
-                <select id="bg-sel" onchange="upd()">
+            <div class="group">
+                <h4>🏞️ Локация</h4>
+                <select id="b-sel" onchange="bChg(this.value)">
                     <option value="https://img.genially.com/67961b32a116fb001568a75e/c0c9010f-c3dd-42c1-b7c1-65024fa3aec6.png">Река</option>
                     <option value="https://img.genially.com/67961b32a116fb001568a75e/fa2ab459-fec9-4ccd-97e3-254427b4ade0.png">Лава</option>
                     <option value="https://img.genially.com/67961b32a116fb001568a75e/02b52ad4-9d31-4b21-a305-8fec6e8a4487.png">Болото</option>
+                    <option value="custom">Свой фон...</option>
                 </select>
-                <label>Платформа</label>
-                <select id="plat-sel" onchange="upd()">
+                <div id="b-custom" style="display:none"><input type="file" accept="image/*" onchange="readI(this,'b-url')"><input type="text" id="b-url" placeholder="URL фона..." oninput="upd()"></div>
+                <label style="margin-top:10px">Вид платформы</label>
+                <select id="p-sel" onchange="upd()">
                     <option value="https://img.genially.com/67961b32a116fb001568a75e/ed6c6e82-953b-43d4-947d-e46227b760f0.png">Лилия</option>
                     <option value="https://img.genially.com/67961b32a116fb001568a75e/bad37c6d-f04c-45c0-b954-807d79ec3a95.png">Камень</option>
                     <option value="https://img.genially.com/67961b32a116fb001568a75e/c6775617-bde5-43e4-9da8-5332d928807e.png">Кочка</option>
@@ -115,337 +99,218 @@
             </div>
         </div>
 
-        <div id="tab-game" class="tab-pane" style="display:none">
-            <div class="section">
-                <h4>⚙️ Настройки</h4>
+        <div id="t-game" class="pane" style="display:none">
+            <div class="group">
+                <h4>⚙️ Правила</h4>
                 <label>Время на ответ (сек)</label>
                 <input type="number" id="g-time" value="10" oninput="upd()">
-                <label>Жизни (сердечки)</label>
+                <label>Жизни</label>
                 <input type="number" id="g-lives" value="3" oninput="upd()">
             </div>
-            <div class="section">
-                <h4>🏁 Фидбек</h4>
-                <label>Текст Победы</label>
-                <input type="text" id="t-win" value="ВЕЛИКОЛЕПНО!" oninput="upd()">
-                <label>Текст Провала</label>
-                <input type="text" id="t-lose" value="ПОПРОБУЙ ЕЩЕ РАЗ" oninput="upd()">
+            <div class="group">
+                <h4>✨ Эффекты</h4>
+                <label>Эффект победы</label>
+                <select id="g-fx" onchange="upd()">
+                    <option value="fireworks">🎆 Салюты</option>
+                    <option value="confetti">🎉 Конфетти</option>
+                    <option value="magic">✨ Магия</option>
+                </select>
+                <div class="row" style="margin-top:10px"><input type="color" id="c-combo" value="#ff00ff" oninput="upd()"><label>Цвет комбо-неона</label></div>
             </div>
         </div>
 
-        <div id="tab-snd" class="tab-pane" style="display:none">
-            <div class="section">
-                <h4>🔊 Ссылки на Звуки (mp3)</h4>
-                <label>Верный ответ</label>
-                <input type="text" id="s-ok" placeholder="URL..." oninput="upd()">
-                <label>Ошибка</label>
-                <input type="text" id="s-no" placeholder="URL..." oninput="upd()">
-                <label>Итоговая Победа (Финал)</label>
-                <input type="text" id="s-final" placeholder="URL..." oninput="upd()">
+        <div id="t-snd" class="pane" style="display:none">
+            <div class="group">
+                <h4>🔊 Звуки (URL)</h4>
+                <label>Верно</label><input type="text" id="s-ok" oninput="upd()">
+                <label>Ошибка</label><input type="text" id="s-no" oninput="upd()">
+                <label>Финал Победа</label><input type="text" id="s-win" oninput="upd()">
+                <label>Финал Провал</label><input type="text" id="s-lose" oninput="upd()">
             </div>
         </div>
 
-        <div id="tab-lvl" class="tab-pane" style="display:none">
-            <div id="lvl-list"></div>
-            <button class="btn btn-main" onclick="addLvl()">+ ДОБАВИТЬ УРОВЕНЬ</button>
+        <div id="t-lvl" class="pane" style="display:none">
+            <div id="lvl-container"></div>
+            <button class="btn btn-main" onclick="addL()">+ ДОБАВИТЬ УРОВЕНЬ</button>
         </div>
     </div>
 </div>
 
-<div id="preview-container">
-    <iframe id="preview-frame"></iframe>
-</div>
+<div id="preview-zone"><iframe id="f-p"></iframe></div>
 
 <div id="modal">
-    <div class="modal-body">
-        <h2 id="modal-title">Настройка уровня</h2>
-        <div class="qa-grid">
-            <div class="qa-col">
-                <label>Вопросы (один в строке)</label>
-                <textarea id="raw-q" placeholder="I ___ ready."></textarea>
-            </div>
-            <div class="qa-col">
-                <label>Ответы (Правильный|Ложный|Ложный)</label>
-                <textarea id="raw-a" placeholder="am|is|are"></textarea>
-            </div>
+    <div class="modal-box">
+        <h2 id="m-t">Настройка заданий</h2>
+        <div class="qa-container">
+            <div class="qa-box"><label>Вопросы (строка = вопрос)</label><textarea id="m-q"></textarea></div>
+            <div class="qa-box"><label>Ответы (правильный|ложь|ложь)</label><textarea id="m-a"></textarea></div>
         </div>
-        <button class="btn btn-main" style="margin-top:20px" onclick="saveLvl()">СОХРАНИТЬ</button>
+        <button class="btn btn-main" onclick="saveL()">СОХРАНИТЬ И ЗАКРЫТЬ</button>
     </div>
 </div>
 
 <script>
-    let levels = [
-        { name: "Уровень 1", q: ["2 + 2 ="], a: ["4|5|10"] }
-    ];
-    let curIdx = 0;
+    let levels = [{name:"Уровень 1", q:["2 + 2 ="], a:["4|5|3"]}];
+    let curL = 0;
 
-    function switchTab(id, el) {
-        document.querySelectorAll('.tab-pane').forEach(p => p.style.display = 'none');
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.getElementById('tab-' + id).style.display = 'block';
-        el.classList.add('active');
+    function showT(id){
+        document.querySelectorAll('.pane').forEach(p=>p.style.display='none');
+        document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+        document.getElementById('t-'+id).style.display='block';
+        event.currentTarget.classList.add('active');
     }
 
-    function toggleHero(v) {
-        document.getElementById('hero-custom').style.display = (v === 'custom') ? 'block' : 'none';
-        upd();
+    function hChg(v){ document.getElementById('h-custom').style.display = v==='custom'?'block':'none'; upd(); }
+    function bChg(v){ document.getElementById('b-custom').style.display = v==='custom'?'block':'none'; upd(); }
+    function readI(input, id){
+        const f = input.files[0];
+        if(f){ const r = new FileReader(); r.onload=(e)=>{document.getElementById(id).value=e.target.result; upd();}; r.readAsDataURL(f); }
     }
 
-    function loadImg(input, id) {
-        const file = input.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => { document.getElementById(id).value = e.target.result; upd(); };
-            reader.readAsDataURL(file);
-        }
-    }
-
-    function addLvl() {
-        levels.push({ name: "Уровень " + (levels.length + 1), q: [""], a: [""] });
-        renderLvls();
-    }
-
-    function renderLvls() {
-        const cont = document.getElementById('lvl-list');
-        cont.innerHTML = '';
-        levels.forEach((l, i) => {
-            const d = document.createElement('div');
-            d.className = 'section';
-            d.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center">
-                <span>${l.name}</span>
-                <button class="btn" style="background:#f1c40f; padding:5px 10px" onclick="openLvl(${i})">⚙️ Настроить</button>
-            </div>`;
-            cont.appendChild(d);
+    function addL(){ levels.push({name:"Уровень "+(levels.length+1), q:[""], a:[""]}); rL(); }
+    function rL(){
+        const c = document.getElementById('lvl-container'); c.innerHTML='';
+        levels.forEach((l,i)=>{
+            const d=document.createElement('div'); d.className='group';
+            d.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center"><span>\${l.name}</span><button class="btn" style="background:var(--accent);color:#000" onclick="openL(\${i})">⚙️ Задания</button></div>`;
+            c.appendChild(d);
         });
         upd();
     }
 
-    function openLvl(i) {
-        curIdx = i;
-        document.getElementById('modal-title').innerText = levels[i].name;
-        document.getElementById('raw-q').value = levels[i].q.join('\n');
-        document.getElementById('raw-a').value = levels[i].a.join('\n');
-        document.getElementById('modal').style.display = 'flex';
-    }
+    function openL(i){ curL=i; document.getElementById('m-t').innerText=levels[i].name; document.getElementById('m-q').value=levels[i].q.join('\n'); document.getElementById('m-a').value=levels[i].a.join('\n'); document.getElementById('modal').style.display='flex'; }
+    function saveL(){ levels[curL].q=document.getElementById('m-q').value.split('\n'); levels[curL].a=document.getElementById('m-a').value.split('\n'); document.getElementById('modal').style.display='none'; rL(); }
 
-    function saveLvl() {
-        levels[curIdx].q = document.getElementById('raw-q').value.split('\n');
-        levels[curIdx].a = document.getElementById('raw-a').value.split('\n');
-        document.getElementById('modal').style.display = 'none';
-        renderLvls();
-    }
-
-    function upd() {
-        const config = {
-            bg: document.getElementById('bg-sel').value,
-            hero: document.getElementById('hero-sel').value === 'custom' ? document.getElementById('hero-url').value : document.getElementById('hero-sel').value,
-            plat: document.getElementById('plat-sel').value,
-            uiColor: document.getElementById('c-ui').value,
-            fontColor: document.getElementById('c-font').value,
-            fontSize: document.getElementById('f-size').value,
-            screenBg: document.getElementById('c-bg').value,
+    function upd(){
+        const cfg = {
+            bg: document.getElementById('b-sel').value==='custom'?document.getElementById('b-url').value:document.getElementById('b-sel').value,
+            hero: document.getElementById('h-sel').value==='custom'?document.getElementById('h-url').value:document.getElementById('h-sel').value,
+            plat: document.getElementById('p-sel').value,
+            cUI: document.getElementById('c-ui').value,
+            cFont: document.getElementById('c-font').value,
+            fSize: document.getElementById('f-size').value,
+            cBg: document.getElementById('c-bg').value,
             neon: document.getElementById('c-neon').checked,
             time: document.getElementById('g-time').value,
             lives: document.getElementById('g-lives').value,
-            winTxt: document.getElementById('t-win').value,
-            loseTxt: document.getElementById('t-lose').value,
-            sfxOk: document.getElementById('s-ok').value,
-            sfxNo: document.getElementById('s-no').value,
-            sfxFinal: document.getElementById('s-final').value,
-            levels: levels
+            fx: document.getElementById('g-fx').value,
+            combo: document.getElementById('c-combo').value,
+            sfx: {ok:document.getElementById('s-ok').value, no:document.getElementById('s-no').value, win:document.getElementById('s-win').value, lose:document.getElementById('s-lose').value},
+            lvls: levels
         };
 
-        const frame = document.getElementById('preview-frame');
-        const finalHTML = `
+        const html = `
 <!DOCTYPE html>
 <html>
 <head>
 <style>
-    :root { --neon: ${config.uiColor}; --txt: ${config.fontColor}; }
-    body, html { margin:0; padding:0; overflow:hidden; font-family:Arial, sans-serif; background:${config.screenBg}; color:var(--txt); }
-    #GAME { position:relative; width:100vw; height:100vh; background:url('${config.bg}') center/cover; }
-    #HUD { position:absolute; top:20px; left:20px; display:flex; gap:15px; z-index:10; }
+    :root { --n: \${cfg.cUI}; --f: \${cfg.cFont}; }
+    body, html { margin:0; padding:0; height:100%; overflow:hidden; font-family:sans-serif; background:\${cfg.cBg}; color:var(--f); }
+    #STAGE { width:100%; height:100%; position:relative; background:url('\${cfg.bg}') center/cover; }
     .panel { 
-        padding:10px 20px; background:rgba(0,0,0,0.6); border:2px solid var(--neon); border-radius:10px;
-        box-shadow: ${config.neon ? '0 0 15px var(--neon)' : 'none'}; font-weight:bold; 
+        padding:10px 20px; background:rgba(0,0,0,0.7); border:2px solid var(--n); border-radius:12px;
+        box-shadow: \${cfg.neon?'0 0 15px var(--n)':'none'}; font-weight:bold;
     }
-    #Q { position:absolute; top:18%; width:100%; text-align:center; font-size:${config.fontSize}px; padding:0 40px; box-sizing:border-box; text-shadow:2px 2px 4px #000; }
-    #HERO { position:absolute; bottom:15%; left:10%; width:120px; height:120px; background:url('${config.hero}') center/contain no-repeat; transition:0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28); }
-    .plats { position:absolute; bottom:15%; width:100%; display:flex; justify-content:center; gap:50px; }
-    .plat { width:150px; height:150px; background:url('${config.plat}') center/contain no-repeat; cursor:pointer; display:flex; align-items:center; justify-content:center; font-weight:bold; color:#000; font-size:18px; transition:0.2s; }
-    .plat:hover { transform:scale(1.1); }
+    #HUD { position:absolute; top:20px; left:20px; display:flex; gap:15px; z-index:10; }
+    #Q { position:absolute; top:20%; width:100%; text-align:center; font-size:\${cfg.fSize}px; text-shadow:2px 2px 4px #000; padding:0 40px; box-sizing:border-box; }
+    #HERO { position:absolute; bottom:15%; left:10%; width:120px; height:120px; background:url('\${cfg.hero}') center/contain no-repeat; transition:0.4s; }
+    #PLATS { position:absolute; bottom:15%; width:100%; display:flex; justify-content:center; gap:60px; }
+    .plat { width:150px; height:150px; background:url('\${cfg.plat}') center/contain no-repeat; cursor:pointer; display:flex; align-items:center; justify-content:center; font-weight:bold; color:#000; }
     
-    #OVERLAY { position:fixed; inset:0; background:rgba(10,23,48,0.95); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:100; text-align:center; }
-    .summary-table { background:rgba(255,255,255,0.05); padding:20px; border-radius:15px; border:1px solid var(--neon); margin:20px 0; min-width:300px; }
-    .summary-row { display:flex; justify-content:space-between; margin:10px 0; font-size:18px; border-bottom:1px solid rgba(255,255,255,0.1); }
-    .btn { padding:15px 40px; background:var(--neon); border:none; border-radius:10px; cursor:pointer; font-weight:bold; font-size:18px; box-shadow: ${config.neon ? '0 0 10px var(--neon)' : 'none'}; }
-    
-    canvas { position:fixed; inset:0; pointer-events:none; z-index:1000; }
+    .screen { position:fixed; inset:0; background:rgba(5,11,26,0.95); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:100; text-align:center; }
+    .table { background:rgba(255,255,255,0.05); padding:20px; border-radius:15px; border:1px solid var(--n); margin:20px; min-width:320px; }
+    .row { display:flex; justify-content:space-between; margin:8px 0; border-bottom:1px solid rgba(255,255,255,0.1); }
+    .btn { padding:15px 40px; background:var(--n); color:#000; border:none; border-radius:10px; cursor:pointer; font-weight:bold; font-size:18px; }
 </style>
 </head>
 <body>
-    <div id="GAME">
+    <div id="STAGE">
         <div id="HUD">
-            <div class="panel">❤️ <span id="lives">${config.lives}</span></div>
-            <div class="panel">⏱️ <span id="timer">${config.time}</span></div>
+            <div class="panel">❤️ <span id="lives">\${cfg.lives}</span></div>
+            <div class="panel">⏱️ <span id="timer">\${cfg.time}</span></div>
             <div class="panel">⭐ <span id="score">0</span></div>
         </div>
         <div id="Q"></div>
         <div id="HERO"></div>
-        <div class="plats" id="plat-box"></div>
+        <div id="PLATS"></div>
     </div>
 
-    <div id="OVERLAY">
-        <h1 id="ov-title">LEAP & LEARN</h1>
-        <div id="ov-content"></div>
-        <button class="btn" id="ov-btn" onclick="startCampaign()">ИГРАТЬ</button>
+    <div id="SCR" class="screen">
+        <h1 id="scr-t">LEAP & LEARN</h1>
+        <div id="scr-c"></div>
+        <button class="btn" id="scr-b" onclick="init()">ИГРАТЬ</button>
     </div>
-
-    <canvas id="fireworks"></canvas>
 
     <script>
-        const CFG = ${JSON.stringify(config)};
-        let curLvl = 0, curQ = 0, score = 0, lives = CFG.lives, timer, grandScore = 0;
+        const c = \${JSON.stringify(cfg)};
+        let curL=0, curQ=0, score=0, lScore=0, lives=c.lives, tick, gScore=0;
+        const sOk=new Audio(c.sfx.ok), sNo=new Audio(c.sfx.no), sW=new Audio(c.sfx.win);
+
+        function init(){ document.getElementById('SCR').style.display='none'; gScore=0; curL=0; lives=c.lives; startL(); }
         
-        const sndOk = new Audio(CFG.sfxOk);
-        const sndNo = new Audio(CFG.sfxNo);
-        const sndFinal = new Audio(CFG.sfxFinal);
-
-        function startCampaign() {
-            document.getElementById('OVERLAY').style.display = 'none';
-            score = 0; curLvl = 0; lives = CFG.lives; grandScore = 0;
-            loadLevel();
+        function startL(){
+            curQ=0; lScore=0;
+            loadQ();
         }
 
-        function loadLevel() {
-            curQ = 0;
-            loadQuestion();
-        }
-
-        function loadQuestion() {
-            clearInterval(timer);
-            const qData = CFG.levels[curLvl].q[curQ];
-            const aData = CFG.levels[curLvl].a[curQ].split('|');
-            document.getElementById('Q').innerText = qData;
+        function loadQ(){
+            clearInterval(tick);
+            const q = c.lvls[curL].q[curQ];
+            const a = c.lvls[curL].a[curQ].split('|');
+            document.getElementById('Q').innerText = q;
+            const pb = document.getElementById('PLATS'); pb.innerHTML='';
             
-            const box = document.getElementById('plat-box');
-            box.innerHTML = '';
-            
-            const options = aData.map((t, i) => ({ t, ok: i === 0 })).sort(() => Math.random() - 0.5);
-            options.forEach(opt => {
-                const d = document.createElement('div');
-                d.className = 'plat'; d.innerText = opt.t;
-                d.onclick = () => check(opt.ok);
-                box.appendChild(d);
+            a.map((t,i)=>({t,ok:i===0})).sort(()=>Math.random()-0.5).forEach(o=>{
+                const d=document.createElement('div'); d.className='plat'; d.innerText=o.t;
+                d.onclick=()=>{ if(o.ok) { score+=100; lScore+=100; sOk.play(); next(); } else { lives--; sNo.play(); if(lives<=0) end(false); else next(); } };
+                pb.appendChild(d);
             });
 
-            let timeLeft = CFG.time;
-            document.getElementById('timer').innerText = timeLeft;
-            timer = setInterval(() => {
-                timeLeft--;
-                document.getElementById('timer').innerText = timeLeft;
-                if(timeLeft <= 0) check(false);
-            }, 1000);
+            let t=c.time; document.getElementById('timer').innerText=t;
+            tick=setInterval(()=>{ t--; document.getElementById('timer').innerText=t; if(t<=0) {lives--; next();} },1000);
         }
 
-        function check(ok) {
-            clearInterval(timer);
-            if(ok) {
-                sndOk.play();
-                score += 100;
-                document.getElementById('score').innerText = score;
-                curQ++;
-                if(curQ >= CFG.levels[curLvl].q.length) showSummary();
-                else loadQuestion();
-            } else {
-                sndNo.play();
-                lives--;
-                document.getElementById('lives').innerText = lives;
-                if(lives <= 0) end(false);
-                else loadQuestion();
-            }
+        function next(){
+            curQ++;
+            if(curQ >= c.lvls[curL].q.length) summ();
+            else loadQ();
+            document.getElementById('lives').innerText=lives;
+            document.getElementById('score').innerText=score;
         }
 
-        function showSummary() {
-            const ov = document.getElementById('OVERLAY');
-            const cont = document.getElementById('ov-content');
-            ov.style.display = 'flex';
-            document.getElementById('ov-title').innerText = "УРОВЕНЬ ЗАВЕРШЕН!";
-            cont.innerHTML = \`
-                <div class="summary-table">
-                    <div class="summary-row"><span>Очки уровня:</span> <span>\${score}</span></div>
-                    <div class="summary-row"><span>Бонус жизней:</span> <span>+\${lives * 50}</span></div>
-                </div>
-            \`;
-            grandScore += (score + lives * 50);
-            curLvl++;
-            const btn = document.getElementById('ov-btn');
-            if(curLvl < CFG.levels.length) {
-                btn.innerText = "СЛЕДУЮЩИЙ УРОВЕНЬ";
-                btn.onclick = () => { ov.style.display='none'; score=0; loadLevel(); };
-            } else {
-                end(true);
-            }
+        function summ(){
+            clearInterval(tick);
+            gScore += lScore;
+            const scr=document.getElementById('SCR'); scr.style.display='flex';
+            document.getElementById('scr-t').innerText="УРОВЕНЬ ПРОЙДЕН!";
+            document.getElementById('scr-c').innerHTML=\`<div class="table">
+                <div class="row"><span>Очки уровня:</span><span>\${lScore}</span></div>
+                <div class="row"><span>Бонус жизней:</span><span>+\${lives*50}</span></div>
+            </div>\`;
+            curL++;
+            const b = document.getElementById('scr-b');
+            if(curL < c.lvls.length) { b.innerText="ДАЛЕЕ"; b.onclick=()=> {scr.style.display='none'; startL();}; }
+            else end(true);
         }
 
-        function end(win) {
-            clearInterval(timer);
-            const ov = document.getElementById('OVERLAY');
-            ov.style.display = 'flex';
-            document.getElementById('ov-title').innerText = win ? CFG.winTxt : CFG.loseTxt;
-            document.getElementById('ov-content').innerHTML = \`<h2>ИТОГОВЫЙ СЧЕТ: \${grandScore}</h2>\`;
-            document.getElementById('ov-btn').innerText = "В МЕНЮ";
-            document.getElementById('ov-btn').onclick = () => location.reload();
-            if(win) { 
-                sndFinal.play(); 
-                startFireworks(); 
-            }
-        }
-
-        // FIREWORKS LOGIC
-        function startFireworks() {
-            const canvas = document.getElementById('fireworks');
-            const ctx = canvas.getContext('2d');
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            let particles = [];
-            
-            function createPart(x, y) {
-                for(let i=0; i<30; i++) {
-                    particles.push({
-                        x, y, 
-                        vx: Math.random()*6-3, vy: Math.random()*6-3,
-                        alpha: 1, color: \`hsl(\${Math.random()*360}, 100%, 50%)\`
-                    });
-                }
-            }
-            setInterval(() => createPart(Math.random()*canvas.width, Math.random()*canvas.height/2), 500);
-            
-            function anim() {
-                ctx.clearRect(0,0,canvas.width, canvas.height);
-                particles.forEach((p, i) => {
-                    p.x += p.vx; p.y += p.vy; p.alpha -= 0.01;
-                    ctx.globalAlpha = p.alpha;
-                    ctx.fillStyle = p.color;
-                    ctx.beginPath(); ctx.arc(p.x, p.y, 3, 0, Math.PI*2); ctx.fill();
-                    if(p.alpha <= 0) particles.splice(i, 1);
-                });
-                requestAnimationFrame(anim);
-            }
-            anim();
+        function end(w){
+            clearInterval(tick);
+            const scr=document.getElementById('SCR'); scr.style.display='flex';
+            document.getElementById('scr-t').innerText=w?"ПОБЕДА!":"ИГРА ОКОНЧЕНА";
+            document.getElementById('scr-c').innerHTML=\`<h2>ИТОГ: \${gScore + lives*50}</h2>\`;
+            document.getElementById('scr-b').innerText="ЗАНОВО";
+            document.getElementById('scr-b').onclick=()=>location.reload();
+            if(w) sW.play();
         }
     <\/script>
 </body>
 </html>`;
-        frame.srcdoc = finalHTML;
+        document.getElementById('f-p').srcdoc = html;
     }
 
-    function copyCode() {
-        const code = document.getElementById('preview-frame').srcdoc;
-        navigator.clipboard.writeText(code);
-        alert("Код игры скопирован! Создайте файл index.html и вставьте его туда.");
-    }
+    function exportFinal(){ navigator.clipboard.writeText(document.getElementById('f-p').srcdoc); alert("Код скопирован!"); }
 
-    renderLvls();
+    rL();
 </script>
 </body>
 </html>
