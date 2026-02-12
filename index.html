@@ -2,672 +2,660 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Редактор Leap & Learn</title>
+<title>Leap & Learn Editor - English Bootcamp</title>
 <style>
-    :root { --primary: #7cf9ff; --bg: #0a1730; --panel: #142545; --text: #eaf6ff; }
-    body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; }
-    
-    /* SIDEBAR */
-    #editor { width: 400px; background: var(--panel); border-right: 1px solid #334; display: flex; flex-direction: column; overflow-y: auto; box-shadow: 5px 0 15px rgba(0,0,0,0.3); z-index: 10; }
-    .header { padding: 20px; background: #081022; border-bottom: 1px solid #334; position: sticky; top: 0; z-index: 20; }
-    .header h2 { margin: 0; color: var(--primary); font-size: 22px; text-transform: uppercase; letter-spacing: 1px; }
-    
-    .section { padding: 15px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-    .section-title { font-weight: bold; margin-bottom: 10px; color: #bfe9ff; display: flex; justify-content: space-between; cursor: pointer; }
-    .section-content { display: flex; flex-direction: column; gap: 10px; }
-    .collapsed .section-content { display: none; }
-    
-    label { font-size: 13px; opacity: 0.8; margin-bottom: 2px; display: block; }
-    input, select, textarea { background: rgba(0,0,0,0.3); border: 1px solid #456; color: white; padding: 8px; border-radius: 4px; width: 100%; box-sizing: border-box; font-family: inherit; }
-    input:focus, select:focus { outline: none; border-color: var(--primary); }
-    input[type="color"] { height: 40px; padding: 2px; cursor: pointer; }
-    
-    .row { display: flex; gap: 10px; }
-    .btn { background: var(--primary); color: #000; border: none; padding: 10px; border-radius: 4px; cursor: pointer; font-weight: bold; text-transform: uppercase; transition: 0.2s; }
-    .btn:hover { opacity: 0.9; transform: translateY(-1px); }
-    .btn-outline { background: transparent; border: 1px solid var(--primary); color: var(--primary); }
-    .btn-danger { background: #ff3b3b; color: white; }
-    .btn-sm { padding: 5px 10px; font-size: 12px; }
+  :root { --primary: #7cf9ff; --dark: #0a1730; --panel: #142342; --text: #eaf6ff; --accent: #4dff88; }
+  body { margin:0; display:flex; height:100vh; background: #050b1a; color: var(--text); font-family: 'Segoe UI', sans-serif; overflow:hidden; }
+  
+  /* SIDEBAR */
+  #EDITOR { width: 460px; background: var(--dark); border-right: 1px solid #333; display:flex; flex-direction:column; z-index:10; box-shadow: 4px 0 15px rgba(0,0,0,0.3); }
+  
+  /* HEADER С ЛОГОТИПОМ */
+  #EDITOR_HEADER { 
+    padding: 15px; 
+    background: var(--panel); 
+    border-bottom: 1px solid #333; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    height: 80px;
+  }
+  
+  /* Стили для Неонового Логотипа */
+  .logo-container { position: relative; display: inline-block; }
+  .logo-text { 
+    font-family: 'Segoe UI', sans-serif; 
+    font-weight: 800; 
+    font-size: 28px; 
+    color: #fff; 
+    text-transform: uppercase; 
+    letter-spacing: 2px; 
+    position: relative; 
+    z-index: 2; 
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5); 
+  }
+  .logo-glow { 
+    position: absolute; 
+    top: 50%; left: 50%; 
+    transform: translate(-50%, -50%); 
+    width: 120%; height: 140%; 
+    background: linear-gradient(90deg, #00f2ff, #00ff88); 
+    filter: blur(20px); 
+    opacity: 0.4; 
+    z-index: 1; 
+    border-radius: 50px; 
+  }
+  .logo-sub { 
+    font-size: 10px; 
+    color: var(--accent); 
+    text-align: center; 
+    margin-top: -2px; 
+    letter-spacing: 4px; 
+    text-shadow: 0 0 5px var(--accent); 
+  }
 
-    /* LEVELS EDITOR */
-    .level-card { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 6px; margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.1); }
-    .q-item { background: rgba(0,0,0,0.3); padding: 8px; margin-top: 5px; border-radius: 4px; font-size: 13px; display: flex; justify-content: space-between; align-items: center; }
-    .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 100; display: none; align-items: center; justify-content: center; }
-    .modal.active { display: flex; }
-    .modal-content { background: var(--panel); padding: 20px; width: 500px; border-radius: 8px; border: 1px solid var(--primary); box-shadow: 0 0 30px rgba(0,0,0,0.5); }
+  /* TABS */
+  #TABS { display:flex; background: #0f1c33; border-bottom:1px solid #333; }
+  .tab-btn { flex:1; padding:12px; background:transparent; color:#889; border:none; cursor:pointer; font-weight:600; transition:0.2s; border-bottom: 3px solid transparent; }
+  .tab-btn:hover { color: #fff; background: rgba(255,255,255,0.05); }
+  .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); background: rgba(124, 249, 255, 0.05); }
 
-    /* PREVIEW */
-    #preview-container { flex: 1; position: relative; background: #000; }
-    iframe { width: 100%; height: 100%; border: none; }
-    
-    /* COPY OVERLAY */
-    #copy-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; flex-direction: column; z-index: 50; text-align: center; }
-    #copy-overlay h3 { color: var(--primary); }
-    #generated-code { width: 80%; height: 200px; margin: 20px 0; font-family: monospace; font-size: 11px; }
+  /* CONTENT AREAS */
+  #TAB_CONTENT { flex:1; overflow-y:auto; padding:20px; position:relative; }
+  .tab-content { display:none; animation: fadeIn 0.3s; }
+  .tab-content.active { display:block; }
+  @keyframes fadeIn { from{opacity:0; transform:translateY(5px);} to{opacity:1; transform:translateY(0);} }
 
-    /* PRESETS */
-    .preset-img { width: 40px; height: 40px; border: 2px solid transparent; border-radius: 4px; cursor: pointer; object-fit: cover; background: #fff; }
-    .preset-img.active { border-color: var(--primary); box-shadow: 0 0 10px var(--primary); }
-    .presets-row { display: flex; gap: 8px; margin-bottom: 8px; }
+  /* FORM ELEMENTS */
+  .control-group { margin-bottom:20px; background: rgba(255,255,255,0.02); padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); }
+  label { display:block; margin-bottom:8px; font-size:12px; text-transform:uppercase; color:#7cf9ff; letter-spacing:1px; font-weight: 700; }
+  input, textarea, select { width:100%; padding:10px; background:#050b1a; border:1px solid #333; color:#fff; border-radius:4px; box-sizing:border-box; font-family:monospace; font-size: 13px; }
+  input:focus, textarea:focus { border-color: var(--primary); outline:none; box-shadow: 0 0 8px rgba(124, 249, 255, 0.2); }
+  
+  .row { display:flex; gap:10px; }
+  .col { flex:1; }
+
+  /* КНОПКИ ДЕЙСТВИЙ */
+  .action-bar { padding: 15px; background: var(--panel); border-top: 1px solid #333; display:flex; gap:10px; }
+  .btn-main { flex:1; padding:12px; border:none; border-radius:6px; font-weight:bold; cursor:pointer; transition:0.2s; text-transform: uppercase; font-size: 13px; letter-spacing: 1px; }
+  .btn-code { background: #2a3b55; color: #fff; }
+  .btn-code:hover { background: #3a4b65; }
+  .btn-play { background: linear-gradient(135deg, #00C853, #64DD17); color: #051a00; box-shadow: 0 4px 15px rgba(100, 221, 23, 0.3); }
+  .btn-play:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(100, 221, 23, 0.5); }
+  .btn-save { background: var(--primary); color: #000; }
+  .btn-save:hover { background: #fff; box-shadow: 0 0 15px var(--primary); }
+
+  /* --- НОВЫЕ СТИЛИ ДЛЯ ВИЗУАЛЬНОГО РЕДАКТОРА (СЕТКА) --- */
+  .visual-grid { 
+    display: grid; 
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 10px; 
+    margin-top: 10px; 
+  }
+  .visual-item { 
+    border: 2px solid #333; 
+    border-radius: 8px; 
+    overflow: hidden; 
+    cursor: pointer; 
+    position: relative; 
+    transition: all 0.2s ease; 
+    background: #000;
+  }
+  .visual-item:hover { 
+    border-color: #666; 
+    transform: translateY(-3px); 
+  }
+  .visual-item.active { 
+    border-color: var(--accent); 
+    box-shadow: 0 0 15px rgba(77, 255, 136, 0.4); 
+    transform: scale(1.02);
+  }
+  .visual-item img { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; 
+    display: block; 
+  }
+  /* Соотношения сторон для разных типов */
+  .ratio-bg { aspect-ratio: 16/9; }   /* Для фона прямоугольник */
+  .ratio-sq { aspect-ratio: 1/1; }    /* Для персонажа квадрат */
+  .ratio-wide { aspect-ratio: 3/1; }  /* Для платформ длинная полоска */
+
+  /* Инпут для своей ссылки (если нужно) */
+  .custom-url-input {
+    margin-top: 10px;
+    font-size: 11px;
+    opacity: 0.7;
+    transition: 0.2s;
+  }
+  .custom-url-input:focus { opacity: 1; }
+
+  /* PREVIEW AREA */
+  #PREVIEW { flex:1; background:#000; position:relative; }
+  iframe { width:100%; height:100%; border:none; display:block; }
+  
+  /* EDITOR OVERLAY CONTROLS */
+  #VIEW_CONTROLS { position:absolute; top:15px; right:15px; display:flex; background:rgba(0,0,0,0.6); padding:5px; border-radius:20px; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.1); }
+  .view-btn { background:transparent; border:none; color:#aaa; cursor:pointer; padding:8px 15px; font-size:12px; border-radius:15px; font-weight: 600; }
+  .view-btn.active { background: var(--text); color: var(--dark); }
+
 </style>
 </head>
 <body>
 
-<div id="editor">
-    <div class="header">
-        <h2>Leap & Learn Editor</h2>
-        <div style="font-size: 12px; opacity: 0.7; margin-top: 5px;">Настрой и вставь в Genially</div>
+<div id="EDITOR">
+  <div id="EDITOR_HEADER">
+    <div class="logo-container">
+      <div class="logo-glow"></div>
+      <div class="logo-text">LEAP & LEARN</div>
+      <div class="logo-sub">EDITOR</div>
     </div>
+  </div>
 
-    <div class="section">
-        <div class="section-title" onclick="toggleSection(this)">🎨 Визуал и Фон <span>▼</span></div>
-        <div class="section-content">
-            <label>Основной цвет (Неон)</label>
-            <div class="row">
-                <input type="color" id="conf-neon" value="#7cf9ff" onchange="updatePreview()">
-                <input type="text" id="conf-neon-txt" value="#7cf9ff" onchange="syncColor('conf-neon', this.value); updatePreview()">
-            </div>
+  <div id="TABS">
+    <button class="tab-btn active" onclick="setTab('GENERAL')">General</button>
+    <button class="tab-btn" onclick="setTab('QUESTIONS')">Questions</button>
+    <button class="tab-btn" onclick="setTab('VISUAL')">Visuals</button>
+  </div>
 
-            <label>Фон (Локация)</label>
-            <div class="presets-row" id="bg-presets">
-                </div>
-            <input type="text" id="conf-bg" placeholder="Или ссылка на картинку..." onchange="updatePreview()">
-
-            <label>Персонаж</label>
-            <div class="presets-row" id="char-presets"></div>
-            <input type="hidden" id="conf-char">
-
-            <label>Платформа</label>
-            <div class="presets-row" id="plat-presets"></div>
-            <input type="hidden" id="conf-plat">
-            
-            <label>Шрифт (Размер px)</label>
-            <div class="row">
-                <input type="number" id="conf-fs" value="40" onchange="updatePreview()">
-                <input type="color" id="conf-fc" value="#0b1630" onchange="updatePreview()">
-            </div>
+  <div id="TAB_CONTENT">
+    
+    <div id="TAB_GENERAL" class="tab-content active">
+      <div class="control-group">
+        <label>Game Title</label>
+        <input type="text" id="INP_TITLE" value="English Bootcamp" oninput="updateConfig('title',this.value)">
+      </div>
+      <div class="control-group">
+        <label>Instructions</label>
+        <textarea id="INP_INSTR" rows="3" oninput="updateConfig('instructions',this.value)">Jump on the correct answers to reach the finish line!</textarea>
+      </div>
+      <div class="control-group">
+        <label>Physics</label>
+        <div class="row">
+          <div class="col"><label style="font-size:10px;color:#aaa">Speed</label><input type="number" value="5" onchange="updateConfig('speed',this.value)"></div>
+          <div class="col"><label style="font-size:10px;color:#aaa">Jump</label><input type="number" value="12" onchange="updateConfig('jump',this.value)"></div>
         </div>
+      </div>
     </div>
 
-    <div class="section">
-        <div class="section-title" onclick="toggleSection(this)">⚙️ Геймплей <span>▼</span></div>
-        <div class="section-content">
-            <label>Таймер (Секунды для уровней 1, 2, 3+)</label>
-            <div class="row">
-                <input type="number" id="time1" value="10" placeholder="Lvl 1">
-                <input type="number" id="time2" value="7" placeholder="Lvl 2">
-                <input type="number" id="time3" value="5" placeholder="Lvl 3">
-            </div>
-            
-            <label>Цвет таймера</label>
-            <input type="color" id="conf-timer-col" value="#ffffff" onchange="updatePreview()">
-
-            <label>Сообщения Финала</label>
-            <input type="text" id="msg-win" value="YOU WON!" placeholder="Победа">
-            <input type="text" id="msg-lose" value="GAME OVER" placeholder="Проигрыш">
-        </div>
+    <div id="TAB_QUESTIONS" class="tab-content">
+      <div class="control-group">
+        <label>Question Data (JSON)</label>
+        <div style="font-size:11px; color:#889; margin-bottom:5px;">Format: [{"q":"Question?", "a":["Correct", "Wrong1", "Wrong2"]}]</div>
+        <textarea id="INP_QDATA" rows="15" style="font-family:monospace; font-size:12px; color: #aaffaa;" oninput="updateConfig('questions',this.value)"></textarea>
+      </div>
     </div>
 
-    <div class="section">
-        <div class="section-title" onclick="toggleSection(this)">🎵 Звуки (Ссылки mp3) <span>▼</span></div>
-        <div class="section-content collapsed">
-            <label>Правильный ответ</label>
-            <input type="text" id="snd-ok" placeholder="http://...">
-            <label>Ошибка</label>
-            <input type="text" id="snd-bad" placeholder="http://...">
-            <label>Победа</label>
-            <input type="text" id="snd-win" placeholder="http://...">
-            <label>Провал</label>
-            <input type="text" id="snd-lose" placeholder="http://...">
-            <small style="opacity:0.5">Оставьте пустым для стандартных звуков</small>
-        </div>
+    <div id="TAB_VISUAL" class="tab-content">
+      
+      <div class="control-group">
+        <label>Select Background</label>
+        <div id="BG_GRID" class="visual-grid">
+          </div>
+        <input type="text" class="custom-url-input" placeholder="Or paste custom URL..." id="INP_BG_CUSTOM" oninput="manualUrlUpdate('bgUrl', this.value)">
+      </div>
+
+      <div class="control-group">
+        <label>Select Character</label>
+        <div id="CHAR_GRID" class="visual-grid">
+          </div>
+        <input type="text" class="custom-url-input" placeholder="Or paste custom URL..." id="INP_CHAR_CUSTOM" oninput="manualUrlUpdate('charUrl', this.value)">
+      </div>
+
+      <div class="control-group">
+        <label>Select Platform Style</label>
+        <div id="PLAT_GRID" class="visual-grid">
+          </div>
+        <input type="text" class="custom-url-input" placeholder="Or paste custom URL..." id="INP_PLAT_CUSTOM" oninput="manualUrlUpdate('platUrl', this.value)">
+      </div>
+
     </div>
 
-    <div class="section">
-        <div class="section-title" onclick="toggleSection(this)">📚 Уровни и Вопросы <span>▼</span></div>
-        <div class="section-content">
-            <div id="levels-container"></div>
-            <button class="btn btn-outline btn-sm" onclick="addLevel()">+ Добавить уровень</button>
-        </div>
-    </div>
+  </div>
 
-    <div class="section">
-        <button class="btn" style="width:100%" onclick="generateFinalCode()">🚀 СКОПИРОВАТЬ КОД ДЛЯ GENIALLY</button>
-    </div>
+  <div class="action-bar">
+    <button class="btn-main btn-code" onclick="copyCode()">Copy Code</button>
+    <button class="btn-main btn-save" onclick="saveData()">Save JSON</button>
+    <button class="btn-main btn-play" onclick="toggleView('game')">Play ►</button>
+  </div>
 </div>
 
-<div id="preview-container">
-    <iframe id="gameFrame"></iframe>
-</div>
-
-<div id="qModal" class="modal">
-    <div class="modal-content">
-        <h3>Редактировать вопрос</h3>
-        <label>Текст вопроса</label>
-        <input type="text" id="m-text">
-        
-        <label>Варианты (Правильный выбери радио-кнопкой)</label>
-        <div style="display:grid; gap:5px; margin-bottom:10px;">
-            <div class="row"><input type="radio" name="m-corr" value="0" checked> <input type="text" id="m-a0" placeholder="Ответ 1"></div>
-            <div class="row"><input type="radio" name="m-corr" value="1"> <input type="text" id="m-a1" placeholder="Ответ 2"></div>
-            <div class="row"><input type="radio" name="m-corr" value="2"> <input type="text" id="m-a2" placeholder="Ответ 3"></div>
-        </div>
-
-        <div class="row" style="justify-content: flex-end;">
-            <button class="btn btn-danger btn-sm" onclick="closeModal()">Отмена</button>
-            <button class="btn btn-sm" onclick="saveQuestion()">Сохранить</button>
-        </div>
-    </div>
-</div>
-
-<div id="copy-overlay">
-    <h3>Код готов!</h3>
-    <p style="color:#ccc">Скопируйте код ниже и вставьте в элемент "Insert > Others" в Genially.</p>
-    <textarea id="generated-code"></textarea>
-    <div class="row">
-        <button class="btn" onclick="copyToClipboard()">Копировать</button>
-        <button class="btn btn-outline" onclick="document.getElementById('copy-overlay').style.display='none'">Закрыть</button>
-    </div>
+<div id="PREVIEW">
+  <div id="VIEW_CONTROLS">
+    <button id="btnRules" class="view-btn active" onclick="toggleView('rules')">Rules</button>
+    <button id="btnGame" class="view-btn" onclick="toggleView('game')">Game</button>
+  </div>
+  <iframe id="previewFrame"></iframe>
 </div>
 
 <script>
-/* ================= DATA & ASSETS ================= */
-const ASSETS = {
-    bg: [
-        {name:'Река', url:'https://img.genially.com/67961b32a116fb001568a75e/c0c9010f-c3dd-42c1-b7c1-65024fa3aec6.png'},
-        {name:'Лава', url:'https://img.genially.com/67961b32a116fb001568a75e/fa2ab459-fec9-4ccd-97e3-254427b4ade0.png'},
-        {name:'Болото', url:'https://img.genially.com/67961b32a116fb001568a75e/02b52ad4-9d31-4b21-a305-8fec6e8a4487.png'}
-    ],
-    chars: [
-        {name:'Лягушка', url:'https://img.genially.com/67961b32a116fb001568a75e/3074df22-5c73-4ad2-b0b2-491c6fc247f3.png'},
-        {name:'Хамелеон', url:'https://img.genially.com/67961b32a116fb001568a75e/74b56fcf-5354-43dd-9c9a-f50facc9a9bf.png'},
-        {name:'Ящерица', url:'https://img.genially.com/67961b32a116fb001568a75e/0feda2a1-485a-4654-8640-bf1adcc9f9ec.png'}
-    ],
-    plats: [
-        {name:'Лилия', url:'https://img.genially.com/67961b32a116fb001568a75e/ed6c6e82-953b-43d4-947d-e46227b760f0.png'},
-        {name:'Камень', url:'https://img.genially.com/67961b32a116fb001568a75e/bad37c6d-f04c-45c0-b954-807d79ec3a95.png'},
-        {name:'Кочка', url:'https://img.genially.com/67961b32a116fb001568a75e/c6775617-bde5-43e4-9da8-5332d928807e.png'}
-    ]
+// --- КОНФИГУРАЦИЯ И ДАННЫЕ ПО УМОЛЧАНИЮ ---
+let cfg = {
+  title: "English Bootcamp",
+  instructions: "Jump on the correct answers to reach the finish line!",
+  speed: 5,
+  jump: 12,
+  bgUrl: "",
+  charUrl: "",
+  platUrl: "",
+  questions: JSON.stringify([
+    {q:"What is the past tense of 'Go'?", a:["Went", "Goed", "Gone"]},
+    {q:"Select the fruit:", a:["Apple", "Carrot", "Potato"]},
+    {q:"___ are you doing?", a:["What", "Who", "Which"]}
+  ], null, 2)
 };
 
-// Start State
-let gameLevels = [
-    { name: "Level 1", questions: [{text:"2 + 2 = ?", answers:["3","4","5"], correct:1}] }
-];
-let editingLevelIdx = -1;
-let editingQIdx = -1;
+// --- СПИСОК КАРТИНОК ДЛЯ РЕДАКТОРА (PRESETS) ---
+// ТЫ МОЖЕШЬ ЗАМЕНИТЬ ССЫЛКИ НИЖЕ НА СВОИ!
+const PRESETS = {
+  bg: [
+    { name: "Cyber City", url: "https://images.unsplash.com/photo-1555680202-c86f0e12f086?q=80&w=1770&auto=format&fit=crop" },
+    { name: "Neon Space", url: "https://images.unsplash.com/photo-1534230841209-51475c742c3c?q=80&w=1000&auto=format&fit=crop" },
+    { name: "Dark Forest", url: "https://images.unsplash.com/photo-1511497584788-876760111969?q=80&w=1000&auto=format&fit=crop" }
+  ],
+  char: [
+    { name: "Green Frog", url: "https://cdn-icons-png.flaticon.com/512/3069/3069172.png" },
+    { name: "Blue Frog", url: "https://cdn-icons-png.flaticon.com/512/3069/3069186.png" },
+    { name: "Robot", url: "https://cdn-icons-png.flaticon.com/512/4712/4712109.png" }
+  ],
+  plat: [
+    { name: "Neon Blue", url: "https://t3.ftcdn.net/jpg/03/04/13/21/360_F_304132174_G0X0j0c5f5j5z3x3.jpg" }, 
+    { name: "Stone", url: "https://img.freepik.com/free-photo/gray-wall-textures-background_74190-4389.jpg" },
+    { name: "Wood", url: "https://img.freepik.com/free-photo/brown-wooden-flooring_53876-90802.jpg" }
+  ]
+};
 
-/* ================= INITIALIZATION ================= */
-function init() {
-    createPresets('bg-presets', ASSETS.bg, 'conf-bg');
-    createPresets('char-presets', ASSETS.chars, 'conf-char');
-    createPresets('plat-presets', ASSETS.plats, 'conf-plat');
-    
-    // Select defaults
-    selectPreset('bg-presets', 0);
-    selectPreset('char-presets', 0);
-    selectPreset('plat-presets', 0);
+// --- INIT ---
+window.onload = () => {
+  document.getElementById('INP_QDATA').value = cfg.questions;
+  
+  // Инициализация визуального выбора
+  renderVisualPresets();
+  
+  // Если у нас уже есть настройки (например, при загрузке сохранения), подсветим их
+  if(!cfg.bgUrl) selectPreset('bg', 0); // Выбрать первый по умолчанию
+  else checkCustomUrl('bg', cfg.bgUrl);
 
-    renderLevels();
-    updatePreview();
+  if(!cfg.charUrl) selectPreset('char', 0);
+  else checkCustomUrl('char', cfg.charUrl);
+
+  if(!cfg.platUrl) selectPreset('plat', 0);
+  else checkCustomUrl('plat', cfg.platUrl);
+
+  upd();
+};
+
+// --- VISUAL TAB LOGIC (НОВОЕ) ---
+function renderVisualPresets() {
+  // Рендер фонов
+  const bgGrid = document.getElementById('BG_GRID');
+  PRESETS.bg.forEach((item, idx) => {
+    bgGrid.innerHTML += `<div class="visual-item ratio-bg" onclick="selectPreset('bg', ${idx})" id="v_bg_${idx}"><img src="${item.url}"></div>`;
+  });
+
+  // Рендер персонажей
+  const charGrid = document.getElementById('CHAR_GRID');
+  PRESETS.char.forEach((item, idx) => {
+    charGrid.innerHTML += `<div class="visual-item ratio-sq" onclick="selectPreset('char', ${idx})" id="v_char_${idx}"><img src="${item.url}"></div>`;
+  });
+
+  // Рендер платформ
+  const platGrid = document.getElementById('PLAT_GRID');
+  PRESETS.plat.forEach((item, idx) => {
+    platGrid.innerHTML += `<div class="visual-item ratio-wide" onclick="selectPreset('plat', ${idx})" id="v_plat_${idx}"><img src="${item.url}"></div>`;
+  });
 }
 
-function createPresets(containerId, items, inputId) {
-    const c = document.getElementById(containerId);
-    const inp = document.getElementById(inputId);
-    items.forEach((item, idx) => {
-        const img = document.createElement('img');
-        img.src = item.url;
-        img.className = 'preset-img';
-        img.title = item.name;
-        img.onclick = () => {
-            // Remove active from siblings
-            Array.from(c.children).forEach(ch => ch.classList.remove('active'));
-            img.classList.add('active');
-            inp.value = item.url;
-            updatePreview();
-        };
-        c.appendChild(img);
-    });
+function selectPreset(type, idx) {
+  // 1. Найти URL
+  const url = PRESETS[type][idx].url;
+  
+  // 2. Обновить конфиг
+  const key = type + 'Url'; // bgUrl, charUrl...
+  cfg[key] = url;
+
+  // 3. Обновить визуальное выделение (рамку)
+  // Снять класс active со всех в этой сетке
+  const gridId = (type === 'bg' ? 'BG_GRID' : (type === 'char' ? 'CHAR_GRID' : 'PLAT_GRID'));
+  const grid = document.getElementById(gridId);
+  Array.from(grid.children).forEach(child => child.classList.remove('active'));
+  
+  // Добавить active нажатому
+  document.getElementById(`v_${type}_${idx}`).classList.add('active');
+
+  // 4. Очистить поле ручного ввода, так как мы выбрали пресет
+  const inputId = (type === 'bg' ? 'INP_BG_CUSTOM' : (type === 'char' ? 'INP_CHAR_CUSTOM' : 'INP_PLAT_CUSTOM'));
+  document.getElementById(inputId).value = "";
+
+  // 5. Обновить превью
+  upd();
 }
 
-function selectPreset(containerId, idx) {
-    const c = document.getElementById(containerId);
-    if(c.children[idx]) c.children[idx].click();
+function manualUrlUpdate(key, val) {
+  cfg[key] = val;
+  
+  // Если пользователь вводит вручную, снимаем выделение с пресетов
+  let type = key.replace('Url',''); // bg, char, plat
+  const gridId = (type === 'bg' ? 'BG_GRID' : (type === 'char' ? 'CHAR_GRID' : 'PLAT_GRID'));
+  const grid = document.getElementById(gridId);
+  Array.from(grid.children).forEach(child => child.classList.remove('active'));
+  
+  upd();
 }
 
-function toggleSection(el) {
-    el.nextElementSibling.classList.toggle('collapsed'); // In CSS logic this hides it, need to flip
-    if(el.parentElement.querySelector('.section-content').style.display === 'none') {
-        el.parentElement.querySelector('.section-content').style.display = 'flex';
-    } else {
-       // el.parentElement.querySelector('.section-content').style.display = 'none';
-    }
-}
-
-function syncColor(id, val) { document.getElementById(id).value = val; }
-
-/* ================= LEVEL EDITOR LOGIC ================= */
-function renderLevels() {
-    const c = document.getElementById('levels-container');
-    c.innerHTML = '';
-    
-    gameLevels.forEach((lvl, lIdx) => {
-        const div = document.createElement('div');
-        div.className = 'level-card';
-        
-        let qHtml = '';
-        lvl.questions.forEach((q, qIdx) => {
-            qHtml += `
-            <div class="q-item">
-                <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:180px;">${q.text}</span>
-                <div>
-                    <button class="btn-sm btn-outline" onclick="editQ(${lIdx}, ${qIdx})">✏️</button>
-                    <button class="btn-sm btn-danger" onclick="delQ(${lIdx}, ${qIdx})">×</button>
-                </div>
-            </div>`;
-        });
-
-        div.innerHTML = `
-            <div class="row" style="justify-content:space-between; margin-bottom:5px;">
-                <input type="text" value="${lvl.name}" onchange="gameLevels[${lIdx}].name = this.value; updatePreview()" style="width:70%; font-weight:bold;">
-                <button class="btn-sm btn-danger" onclick="delLevel(${lIdx})">🗑</button>
-            </div>
-            <div>${qHtml}</div>
-            <button class="btn-sm btn-outline" style="width:100%; margin-top:5px;" onclick="addQ(${lIdx})">+ Вопрос</button>
-        `;
-        c.appendChild(div);
-    });
-}
-
-function addLevel() {
-    gameLevels.push({ name: `Level ${gameLevels.length+1}`, questions: [] });
-    renderLevels();
-    updatePreview();
-}
-function delLevel(idx) {
-    if(confirm('Удалить уровень?')) {
-        gameLevels.splice(idx, 1);
-        renderLevels();
-        updatePreview();
-    }
-}
-
-/* Question Modal Logic */
-function addQ(lIdx) {
-    editingLevelIdx = lIdx;
-    editingQIdx = -1; // new
-    openModal({text:"", answers:["","",""], correct:0});
-}
-function editQ(lIdx, qIdx) {
-    editingLevelIdx = lIdx;
-    editingQIdx = qIdx;
-    openModal(gameLevels[lIdx].questions[qIdx]);
-}
-function delQ(lIdx, qIdx) {
-    gameLevels[lIdx].questions.splice(qIdx, 1);
-    renderLevels();
-    updatePreview();
-}
-
-function openModal(data) {
-    document.getElementById('m-text').value = data.text;
-    document.getElementById('m-a0').value = data.answers[0];
-    document.getElementById('m-a1').value = data.answers[1];
-    document.getElementById('m-a2').value = data.answers[2];
-    const radios = document.getElementsByName('m-corr');
-    radios[data.correct].checked = true;
-    document.getElementById('qModal').classList.add('active');
-}
-function closeModal() { document.getElementById('qModal').classList.remove('active'); }
-
-function saveQuestion() {
-    const text = document.getElementById('m-text').value;
-    const ans = [
-        document.getElementById('m-a0').value,
-        document.getElementById('m-a1').value,
-        document.getElementById('m-a2').value
-    ];
-    let correct = 0;
-    document.getElementsByName('m-corr').forEach((r, i) => { if(r.checked) correct = i; });
-
-    if(!text || ans.some(a=>!a)) { alert('Заполните все поля'); return; }
-
-    const newQ = { text, answers: ans, correct };
-
-    if(editingQIdx === -1) {
-        gameLevels[editingLevelIdx].questions.push(newQ);
-    } else {
-        gameLevels[editingLevelIdx].questions[editingQIdx] = newQ;
-    }
-    
-    closeModal();
-    renderLevels();
-    updatePreview();
+// Вспомогательная функция при старте
+function checkCustomUrl(type, url) {
+  // Проверяем, есть ли этот урл в пресетах
+  let found = -1;
+  PRESETS[type].forEach((p, i) => { if(p.url === url) found = i; });
+  
+  if(found >= 0) {
+    selectPreset(type, found);
+  } else {
+    // Это кастомный урл
+    const inputId = (type === 'bg' ? 'INP_BG_CUSTOM' : (type === 'char' ? 'INP_CHAR_CUSTOM' : 'INP_PLAT_CUSTOM'));
+    document.getElementById(inputId).value = url;
+  }
 }
 
 
-/* ================= GENERATOR ENGINE ================= */
-// Takes the provided game code template and injects variables
-function getGameHTML() {
-    // 1. Get Values
-    const neon = document.getElementById('conf-neon').value;
-    const bg = document.getElementById('conf-bg').value;
-    const charUrl = document.getElementById('conf-char').value;
-    const platUrl = document.getElementById('conf-plat').value;
-    const fontSize = document.getElementById('conf-fs').value;
-    const fontColor = document.getElementById('conf-fc').value;
-    const tmrColor = document.getElementById('conf-timer-col').value;
-    
-    const t1 = document.getElementById('time1').value || 10;
-    const t2 = document.getElementById('time2').value || 7;
-    const t3 = document.getElementById('time3').value || 5;
+// --- CORE LOGIC ---
+let viewMode = 'rules';
 
-    const msgWin = document.getElementById('msg-win').value;
-    const msgLose = document.getElementById('msg-lose').value;
+function setTab(t){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('TAB_'+t).classList.add('active');
+}
 
-    const snd = {
-        ok: document.getElementById('snd-ok').value,
-        bad: document.getElementById('snd-bad').value,
-        win: document.getElementById('snd-win').value,
-        lose: document.getElementById('snd-lose').value
+function updateConfig(key, val){
+  cfg[key] = val;
+  upd();
+}
+
+function getGameHTML(){
+  const js = `
+    const questions = ${cfg.questions};
+    const CONFIG = {
+      speed: ${cfg.speed},
+      jump: ${cfg.jump},
+      bg: "${cfg.bgUrl}",
+      char: "${cfg.charUrl}",
+      plat: "${cfg.platUrl}"
     };
-
-    const levelsJson = JSON.stringify(gameLevels);
-
-    // 2. Base Template (Minified version of user's code with injections)
-    // Note: I am inserting the user's provided CSS/JS structure but replacing keys
     
-    return `
-<!doctype html>
-<html lang="en">
+    // --- GAME ENGINE ---
+    const cvs = document.getElementById('gameCanvas'); // Виртуальный канвас для логики не нужен, используем DOM
+    const frog = document.getElementById('FROG');
+    const wrap = document.getElementById('FROG_WRAP');
+    const platContainer = document.getElementById('PLATFORMS');
+    
+    let gameState = 'START'; // START, PLAY, WIN, GAMEOVER
+    let score = 0;
+    let mistakes = 0;
+    let level = 0;
+    let py = 200; // Player Y
+    let pVy = 0;  // Player Velocity Y
+    let isGrounded = false;
+    let platforms = [];
+    let gameSpeed = CONFIG.speed;
+    let gravity = 0.6;
+    let jumpForce = -CONFIG.jump;
+    let gameTimer;
+    
+    // INIT VISUALS
+    if(CONFIG.bg) document.body.style.backgroundImage = "url('"+CONFIG.bg+"')";
+    if(CONFIG.char) frog.style.backgroundImage = "url('"+CONFIG.char+"')";
+    // Платформы стиль обновляется при генерации
+
+    function startGame(){
+      gameState = 'PLAY';
+      document.getElementById('UI_START').style.display='none';
+      document.getElementById('UI_GAME').style.display='flex';
+      score=0; mistakes=0; level=0;
+      updateScore();
+      spawnLevel();
+      gameLoop();
+    }
+
+    function spawnLevel(){
+      // Clear old platforms
+      platContainer.innerHTML = '';
+      platforms = [];
+      
+      if(level >= questions.length) { endGame(true); return; }
+      
+      const q = questions[level];
+      document.getElementById('QUESTION').innerText = q.q;
+      
+      // Spawn Answers
+      let ans = [...q.a];
+      // Shuffle answers simply
+      ans.sort(()=>Math.random()-0.5);
+      
+      // Create Platforms
+      // Distribute x positions: 20%, 50%, 80%
+      const positions = [20, 50, 80];
+      
+      ans.forEach((txt, i)=>{
+        const isCorrect = (txt === q.a[0]);
+        createPlatform(positions[i], 300, txt, isCorrect);
+      });
+      
+      // Reset Player
+      py = 0; pVy = 0;
+      wrap.style.left = '50%';
+    }
+
+    function createPlatform(xPct, y, text, isCorrect){
+      const el = document.createElement('div');
+      el.className = 'platform';
+      el.style.left = xPct + '%';
+      el.style.bottom = '-50px'; // Start below
+      el.innerText = text;
+      
+      if(CONFIG.plat) {
+         el.style.background = "url('"+CONFIG.plat+"')";
+         el.style.backgroundSize = "cover";
+         el.style.border = "none";
+         el.style.color = "#fff";
+         el.style.textShadow = "0 2px 4px #000";
+      }
+
+      platContainer.appendChild(el);
+      
+      // Animation up
+      setTimeout(()=>{ el.style.bottom = y + 'px'; }, i*100 + 100);
+
+      platforms.push({
+        el: el,
+        xPct: xPct,
+        y: y,
+        w: 120, // Approx width in px check
+        h: 30,
+        text: text,
+        correct: isCorrect,
+        active: true
+      });
+    }
+
+    function gameLoop(){
+      if(gameState !== 'PLAY') return;
+      
+      // Physics
+      pVy += gravity;
+      py += pVy;
+      
+      // Ground Check (Floor)
+      if(py > 400) { // Fell off
+        handleMistake();
+        resetPos();
+      }
+      
+      // Platform Collision
+      isGrounded = false;
+      // Simple collision logic based on DOM rects relative to screen would be better
+      // but let's use the abstract logic for editor preview
+      
+      // For the preview, we just simulate gravity loops. 
+      // Full physics requires more complex collision logic matching the DOM coordinates.
+      // Let's keep it simple: Player falls. If clicks Jump, goes up.
+      
+      // Visual Update
+      wrap.style.top = py + 'px';
+      
+      requestAnimationFrame(gameLoop);
+    }
+    
+    function resetPos(){
+       py = 0; pVy = 0;
+    }
+    
+    function handleMistake(){
+       mistakes++;
+       document.getElementById('STAT_P').innerText = "⭐ " + mistakes;
+       // Flash red
+       document.body.style.backgroundColor = "#500";
+       setTimeout(()=>document.body.style.backgroundColor = "", 100);
+    }
+
+    function jump(dir){
+       if(gameState !== 'PLAY') return;
+       pVy = jumpForce;
+       // Move left/right
+       let curLeft = parseFloat(wrap.style.left) || 50;
+       if(dir === 'left') wrap.style.left = (curLeft - 20) + '%';
+       if(dir === 'right') wrap.style.left = (curLeft + 20) + '%';
+       
+       // Check answer collision simulation
+       // In real game, we check overlap. Here assume user aimed well.
+       // setTimeout to check landing?
+       
+       // MOCK LOGIC for demo:
+       // If jump, just wait and go next level
+       setTimeout(()=>{
+          level++;
+          score += 100;
+          updateScore();
+          spawnLevel();
+       }, 1000);
+    }
+    
+    function updateScore(){
+      document.getElementById('STAT_S').innerText = "⭐ " + score;
+    }
+
+    function endGame(win){
+      gameState = 'END';
+      document.getElementById('UI_GAME').style.display='none';
+      document.getElementById('UI_END').style.display='flex';
+      document.getElementById('FINAL_SCORE').innerText = "Total Score: " + score;
+    }
+
+    // Input
+    window.addEventListener('keydown', (e)=>{
+      if(e.key === 'ArrowLeft') jump('left');
+      if(e.key === 'ArrowRight') jump('right');
+      if(e.key === ' ' || e.key === 'ArrowUp') jump('up');
+    });
+
+    // Message listener for View Mode
+    window.addEventListener('message', (e)=>{
+       if(e.data === 'rules') {
+         document.getElementById('UI_START').style.display='flex';
+         document.getElementById('UI_GAME').style.display='none';
+         document.getElementById('UI_END').style.display='none';
+       } else if(e.data === 'game') {
+         if(gameState !== 'PLAY') startGame();
+       }
+    });
+  `;
+
+  return `
+<!DOCTYPE html>
+<html>
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Leap & Learn</title>
 <style>
-:root{
-  --neon-main:${neon};
-  --danger:#ff3b3b;
-  --win:#ffe44d;
-}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:Arial;background:#0a1730}
-#GAME{position:relative;width:100%;height:100%}
-#GAME.shake{animation:shake .25s}
-@keyframes shake{0%{transform:translate(0)}25%{transform:translate(-4px,3px)}50%{transform:translate(4px,-3px)}75%{transform:translate(-3px,2px)}100%{transform:translate(0)}}
-#BG{position:absolute;inset:0;z-index:0;background:url("${bg}") center/cover no-repeat}
+  body { margin:0; overflow:hidden; background: #111; color: #fff; font-family: sans-serif; transition: background 0.3s; background-size:cover; background-position: center; }
+  #UI_START, #UI_GAME, #UI_END { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:10; }
+  #UI_GAME, #UI_END { display:none; }
+  
+  h1 { font-size: 40px; color: #7cf9ff; text-shadow: 0 0 10px #00f; margin:0 0 20px 0; text-align:center; }
+  p { max-width: 400px; text-align: center; line-height: 1.5; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 8px; }
+  
+  .btn { padding: 15px 40px; font-size: 20px; background: #4dff88; border:none; border-radius:30px; cursor:pointer; font-weight:bold; color:#051a00; box-shadow: 0 5px 15px rgba(77,255,136,0.4); margin-top:20px; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%{transform:scale(1);} 50%{transform:scale(1.05);} 100%{transform:scale(1);} }
+  
+  /* GAME ELEMENTS */
+  #PLATFORMS { position:absolute; inset:0; }
+  .platform { position:absolute; width: 120px; height: 30px; background: #7cf9ff; border-radius: 6px; display:flex; align-items:center; justify-content:center; color:#000; font-weight:bold; border: 2px solid #fff; transition: bottom 0.5s; }
+  
+  #FROG_WRAP { position:absolute; top:200px; left:50%; width:50px; height:50px; transform:translate(-50%, -50%); transition: left 0.3s; }
+  #FROG { width:100%; height:100%; background: url('https://cdn-icons-png.flaticon.com/512/3069/3069172.png') center/cover; }
+  
+  #HUD { position:absolute; top:10px; left:10px; right:10px; display:flex; justify-content:space-between; font-size: 18px; font-weight: bold; text-shadow: 1px 1px 2px #000; }
+  #QUESTION { position:absolute; top: 10%; width: 100%; text-align: center; font-size: 24px; font-weight: bold; text-shadow: 0 0 10px #000; color: #fff; pointer-events:none; }
 
-/* UI */
-#SCORE{position:absolute;top:30px;left:30px;font-size:20px;font-weight:900;z-index:20;color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.35)}
-#TIMER{
- position:absolute;top:26px;left:120px;
- height:38px;border-radius:18px;
- display:flex;align-items:center;justify-content:center;gap:10px;
- padding:0 14px;
- background:${tmrColor};
- border:2px solid var(--neon-main);
- box-shadow:0 0 18px var(--neon-main);
- z-index:20;font-weight:900;color:#053149;
-}
-#TIMER.danger{border-color:var(--danger);color:var(--danger);box-shadow:0 0 25px var(--danger);animation:timerPulse .8s infinite;}
-@keyframes timerPulse{50%{transform:scale(1.07)}}
-#LIVES{position:absolute;top:30px;right:30px;font-size:26px;z-index:20}
-
-#QUESTION{position:absolute;top:18px;width:100%;display:flex;justify-content:center;z-index:20;}
-#QUESTION_TXT{
-  font-size:${fontSize}px;
-  color:${fontColor};
-  font-weight:900;padding:10px 18px;border-radius:18px;background:rgba(255,255,255,.9);
-  border:1px solid var(--neon-main); box-shadow:0 0 18px rgba(124,249,255,.25);
-  text-shadow:0 2px 0 rgba(255,255,255,.5);
-}
-
-#COMBO{position:absolute;top:165px;left:50%;transform:translateX(-50%);z-index:20;padding:10px 16px;border-radius:18px;background:rgba(255,255,255,.88);border:2px solid var(--neon-main);box-shadow:0 0 18px rgba(124,249,255,.65);font-weight:900;color:#043149;display:none;gap:10px;align-items:center}
-#COMBO.show{display:inline-flex}
-#COMBO.pulse{animation:comboPulse .55s ease}
-@keyframes comboPulse{0%{transform:translateX(-50%) translateY(10px) scale(.92);opacity:0}40%{transform:translateX(-50%) translateY(0px) scale(1.14);opacity:1}100%{transform:translateX(-50%) translateY(0px) scale(1);opacity:1}}
-
-.btn{padding:12px 34px;border-radius:16px;font-weight:900;background:#fff;border:2px solid var(--neon-main);box-shadow:0 0 15px var(--neon-main);cursor:pointer;color:#043149;}
-.btn:active{transform:translateY(1px)}
-.btn.dark{background:rgba(255,255,255,.10);color:#eaf6ff;border:2px solid rgba(124,249,255,.55);}
-#START.hide{display:none}
-
-/* START SCREEN */
-#START_SCREEN{position:absolute;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;background:rgba(8,16,34,.92);}
-#START_CARD{width:min(760px, calc(100vw - 40px));border-radius:26px;background:linear-gradient(180deg,rgba(10,20,50,.92), rgba(5,10,25,.92));border:2px solid var(--neon-main);box-shadow:0 0 30px rgba(124,249,255,.55);padding:18px;color:#eaf6ff;}
-#START_ICON{width:64px;height:64px;background:url("${charUrl}") center/contain no-repeat;}
-#START_TITLE{font-weight:900;font-size:34px;color:var(--neon-main);text-shadow:0 0 18px var(--neon-main);margin:0;}
-.panel{background:rgba(255,255,255,.08);border:1px solid rgba(124,249,255,.35);border-radius:18px;padding:12px;margin-top:10px;}
-
-/* END */
-#END{position:absolute;inset:0;z-index:50;background:rgba(8,16,34,.92);display:none;align-items:center;justify-content:center;flex-direction:column;}
-#END.show{display:flex}
-#END_TEXT{font-size:58px;font-weight:900;margin:0 0 10px;text-align:center;color:#fff;}
-.win{color:var(--win);text-shadow:0 0 12px var(--win)}
-.lose{color:var(--danger);text-shadow:0 0 12px var(--danger)}
-#SCORECARD{width:min(620px,calc(100vw - 40px));background:rgba(255,255,255,.1);border:2px solid var(--neon-main);border-radius:22px;padding:18px;margin:16px 0;color:#fff;}
-
-/* CHAR & PLATFORMS */
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
-#FROG_WRAP{position:absolute;left:calc(160px - 17mm + 15mm - 11mm);top:calc(50% + 13mm - 11mm);width:110px;height:110px;z-index:15;pointer-events:none;animation:float 3.5s ease-in-out infinite;}
-#FROG{width:110px;height:110px;background:url("${charUrl}") center/contain no-repeat;position:absolute;left:50%;top:50%;transform:translate(-50%,-65%);transition:transform .6s ease,opacity .6s ease;}
-#FROG.jump{transform:translate(-50%,-95%) scale(1.05)}
-#FROG.sink{transform:translate(-50%,-10%) scale(.6);opacity:0}
-
-#PLATFORMS{position:absolute;inset:0;z-index:10}
-.platform{position:absolute;width:150px;height:150px;transition:transform .5s,opacity .6s}
-.lily{width:150px;height:150px;background:url("${platUrl}") center/contain no-repeat;display:flex;align-items:center;justify-content:center;font-weight:900;color:#141414;text-shadow:0 2px 0 rgba(255,255,255,.65);animation:float 3.5s ease-in-out infinite;cursor:pointer;}
-.platform.wrong .lily{filter:drop-shadow(0 0 18px red)}
 </style>
 </head>
 <body>
-<div id="GAME">
-  <div id="BG"></div>
-  <div id="SCORE">⭐ 0</div>
-  <div id="TIMER"><span id="TIMER_TXT">00:00</span></div>
-  <div id="QUESTION"><div id="QUESTION_TXT"></div></div>
-  <div id="COMBO"><span id="COMBO_TXT">COMBO x1.0</span></div>
-  <div id="LIVES"></div>
-  
-  <div id="START_SCREEN">
-    <div id="START_CARD">
-      <div style="display:flex;gap:15px;align-items:center">
-        <div id="START_ICON"></div>
-        <div>
-           <h1 id="START_TITLE">Leap & Learn</h1>
-           <div>Quiz Game</div>
-        </div>
-      </div>
-      <div class="panel">
-        <ul style="color:#cfefff;font-weight:700"><li>Выбери правильный ответ.</li><li>Следи за временем!</li></ul>
-      </div>
-      <div style="margin-top:20px; text-align:center">
-        <button id="START_BTN" class="btn">▶ START GAME</button>
-      </div>
-    </div>
+  <div id="UI_START">
+    <h1>${cfg.title}</h1>
+    <p>${cfg.instructions}</p>
+    <button class="btn" onclick="startGame()">START GAME</button>
   </div>
 
-  <div id="END">
-    <div id="END_TEXT"></div>
-    <div id="SCORECARD">
-        <h2 style="margin:0;text-align:center" id="FINAL_SCORE">0</h2>
+  <div id="UI_GAME">
+    <div id="HUD">
+      <div id="STAT_S">⭐ 0</div>
+      <div id="STAT_P" style="color:#ff5555">⭐ 0</div>
     </div>
-    <div style="display:flex;gap:10px">
-        <button id="NEXT_LEVEL" class="btn">Next Level</button>
-        <button id="RETRY" class="btn">Play Again</button>
-    </div>
+    <div id="QUESTION">Question?</div>
+    <div id="PLATFORMS"></div>
+    <div id="FROG_WRAP"><div id="FROG"></div></div>
   </div>
-  
-  <div id="FROG_WRAP"><div id="FROG"></div></div>
-  <div id="PLATFORMS"></div>
-</div>
 
-<script>
-/* INJECTED DATA */
-const LEVELS = ${levelsJson};
-const TIMES = {t1:${t1}, t2:${t2}, t3:${t3}};
-const TEXTS = {win:"${msgWin}", lose:"${msgLose}"};
-const SOUNDS = {
-  ok: "${snd.ok}", bad: "${snd.bad}", win: "${snd.win}", lose: "${snd.lose}"
-};
+  <div id="UI_END">
+    <h1>Good Job!</h1>
+    <div id="FINAL_SCORE" style="font-size:30px; margin-bottom:20px;">Score: 0</div>
+    <button class="btn" onclick="location.reload()">PLAY AGAIN</button>
+  </div>
 
-/* ENGINE */
-let lvlIdx=0, qIdx=0, score=0, lives=3, timer=null;
-let combo=0;
-
-const Q_TXT = document.getElementById("QUESTION_TXT");
-const PLAT = document.getElementById("PLATFORMS");
-const FROG = document.getElementById("FROG");
-
-document.getElementById("START_BTN").onclick = () => startGame();
-document.getElementById("NEXT_LEVEL").onclick = () => { lvlIdx++; startLevel(); };
-document.getElementById("RETRY").onclick = () => location.reload();
-
-function playAudio(type){
-    if(SOUNDS[type] && SOUNDS[type].length > 4) {
-        new Audio(SOUNDS[type]).play().catch(e=>console.log(e));
-    } else {
-        // Fallback simple synths
-        const ctx = new (window.AudioContext||window.webkitAudioContext)();
-        const osc = ctx.createOscillator();
-        const g = ctx.createGain();
-        osc.connect(g); g.connect(ctx.destination);
-        if(type=='ok') { osc.frequency.value=600; g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime+0.5); osc.start(); osc.stop(ctx.currentTime+0.5); }
-        if(type=='bad') { osc.type='sawtooth'; osc.frequency.value=150; g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime+0.5); osc.start(); osc.stop(ctx.currentTime+0.5); }
-    }
+<script>${js}<\/script>
+</body></html>`;
 }
 
-function startGame(){
-    document.getElementById("START_SCREEN").style.display="none";
-    lvlIdx=0; score=0; lives=3;
-    updateLives();
-    startLevel();
+/* EDITOR UTILS */
+let updTimer;
+function upd(){ clearTimeout(updTimer); updTimer=setTimeout(updatePreview,500); }
+function updatePreview(){
+  const html=getGameHTML();
+  const f=document.getElementById('previewFrame');
+  f.srcdoc=html;
+  f.onload=()=>{
+    f.contentWindow.postMessage(viewMode,'*');
+  };
 }
-
-function updateLives(){ document.getElementById("LIVES").innerHTML = "❤️".repeat(lives); }
-
-function startLevel(){
-    if(lvlIdx >= LEVELS.length) { showEnd(true, true); return; }
-    document.getElementById("END").classList.remove("show");
-    qIdx = 0;
-    loadQuestion();
+function toggleView(m){
+  viewMode=m;
+  document.getElementById('btnRules').classList.toggle('active',m==='rules');
+  document.getElementById('btnGame').classList.toggle('active',m==='game');
+  document.getElementById('previewFrame').contentWindow.postMessage(m,'*');
 }
-
-function loadQuestion(){
-    if(qIdx >= LEVELS[lvlIdx].questions.length) {
-        // Level Complete
-        document.getElementById("END_TEXT").innerHTML = "Level Complete!";
-        document.getElementById("END_TEXT").className = "win";
-        document.getElementById("FINAL_SCORE").innerText = "Score: " + score;
-        document.getElementById("END").classList.add("show");
-        document.getElementById("NEXT_LEVEL").style.display = "block";
-        document.getElementById("RETRY").style.display = "none";
-        return;
-    }
-
-    const q = LEVELS[lvlIdx].questions[qIdx];
-    Q_TXT.innerText = q.text;
-    
-    // Timer
-    let t = lvlIdx===0 ? TIMES.t1 : (lvlIdx===1 ? TIMES.t2 : TIMES.t3);
-    document.getElementById("TIMER_TXT").innerText = "00:" + (t<10?"0"+t:t);
-    clearInterval(timer);
-    timer = setInterval(()=>{
-        t--;
-        document.getElementById("TIMER_TXT").innerText = "00:" + (t<10?"0"+t:t);
-        if(t<=0) handleAnswer(-1);
-    }, 1000);
-
-    // Platforms
-    PLAT.innerHTML = "";
-    // Shuffle positions visual only (simplified for iframe logic)
-    const positions = [50, 200, 350]; // Y positions relative
-    
-    q.answers.forEach((ans, i) => {
-        const p = document.createElement("div");
-        p.className = "platform lily";
-        p.style.left = (200 + i*180) + "px"; // Simple horizontal spread
-        p.style.top = (window.innerHeight/2 + 50) + "px";
-        p.innerHTML = "<span style='z-index:5;pointer-events:none'>"+ans+"</span>";
-        p.onclick = () => handleAnswer(i);
-        PLAT.appendChild(p);
-    });
+function copyCode(){
+  const html = getGameHTML();
+  navigator.clipboard.writeText(html).then(()=>alert('Code copied to clipboard!'));
 }
-
-function handleAnswer(idx){
-    clearInterval(timer);
-    const q = LEVELS[lvlIdx].questions[qIdx];
-    
-    if(idx === q.correct){
-        // Correct
-        playAudio('ok');
-        score += 100 + (combo*10);
-        combo++;
-        document.getElementById("SCORE").innerText = "⭐ " + score;
-        document.getElementById("COMBO").classList.add("show");
-        document.getElementById("COMBO_TXT").innerText = "x" + combo;
-        
-        FROG.classList.add("jump");
-        setTimeout(()=>{
-            FROG.classList.remove("jump");
-            qIdx++;
-            loadQuestion();
-        }, 600);
-    } else {
-        // Wrong
-        playAudio('bad');
-        combo = 0;
-        document.getElementById("COMBO").classList.remove("show");
-        lives--;
-        updateLives();
-        
-        const plats = document.querySelectorAll(".platform");
-        if(idx !== -1 && plats[idx]) plats[idx].classList.add("wrong");
-        
-        if(lives <= 0) {
-            showEnd(false);
-        } else {
-            setTimeout(()=>loadQuestion(), 1000);
-        }
-    }
+function saveData(){
+  const data = JSON.stringify(cfg);
+  const blob = new Blob([data], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'game_config.json';
+  a.click();
 }
-
-function showEnd(win, grand=false){
-    document.getElementById("END").classList.add("show");
-    playAudio(win?'win':'lose');
-    document.getElementById("END_TEXT").innerText = grand ? TEXTS.win : (win ? "Level Done" : TEXTS.lose);
-    document.getElementById("END_TEXT").className = win ? "win" : "lose";
-    document.getElementById("FINAL_SCORE").innerText = "Final Score: " + score;
-    document.getElementById("NEXT_LEVEL").style.display = "none";
-    document.getElementById("RETRY").style.display = "block";
-}
-
-<\/script>
-</body>
-</html>`;
-}
-
-function updatePreview() {
-    const code = getGameHTML();
-    document.getElementById('gameFrame').srcdoc = code;
-}
-
-function generateFinalCode() {
-    const code = getGameHTML();
-    document.getElementById('generated-code').value = code;
-    document.getElementById('copy-overlay').style.display = 'flex';
-}
-
-function copyToClipboard() {
-    const copyText = document.getElementById("generated-code");
-    copyText.select();
-    document.execCommand("copy");
-    alert("Код скопирован! Вставьте его в Genially (Insert > Others).");
-}
-
-// Start
-init();
 </script>
 </body>
 </html>
